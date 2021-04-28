@@ -11,7 +11,7 @@ import UserNotifications
 
 class ViewController: UIViewController, UITextFieldDelegate {
     
-    
+    //declare variables
     @IBOutlet weak var waterServo: UILabel!
     @IBOutlet weak var waterLvlLbl: UILabel!
     @IBOutlet weak var temp: UILabel!
@@ -25,7 +25,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     let humShape = CAShapeLayer()
     let sqaure = CAShapeLayer()
     var minTempVal = 18
-    var maxTempVal = 20
+    var maxTempVal = 30
     var minHumVal = 40
     var maxHumVal = 50
     var minMoistureVal = 25
@@ -39,7 +39,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        //variableReader()
+        variableReader()
         timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 60000){
             self.timer.invalidate()
@@ -105,7 +105,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             maxTemp.placeholder = String(maxTempVal)
         }else{
             let forceMaxTemp = maxTemp.text!
-            let maxTempVal = Int(forceMaxTemp)!
+            maxTempVal = Int(forceMaxTemp)!
             maxTemp.text = ""
             maxTemp.placeholder = String(maxTempVal)
         }
@@ -293,12 +293,57 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                 }
                                 else {
                                     if let temp = result as? Double {
-                                        print("Room temperature is \(String(temp)) degrees")
-//                                        DispatchQueue.global().async(execute: {
-//                                                DispatchQueue.main.async {
-//                                                    self.temp.text = String(format: "%.2f", temp);
-//                                                }
-//                                             })
+                                        print("Room temperature is \(String(temp)) degrees \(self.maxTempVal) \(self.minTempVal) \(self.maxHumVal) \(self.minHumVal)")
+                                        if temp < Double(self.minTempVal) || temp > Double(self.maxTempVal){
+                                            var myPhoton : ParticleDevice?
+                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
+                                                if let _ = error {
+                                                    print("Check your internet connectivity")
+                                                }
+                                                else {
+                                                    if let d = devices {
+                                                        for device in d {
+                                                            if device.name == "Napier45" {
+                                                                myPhoton = device
+                                                                var task = myPhoton!.callFunction("ledTempOn", withArguments: ["D5", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
+                                                                    if (error == nil) {
+                                                                        print("LED on D5 successfully turned on")
+                                                                    }
+                                                                    else{
+                                                                        print(error)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            var myPhoton : ParticleDevice?
+                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
+                                                if let _ = error {
+                                                    print("Check your internet connectivity")
+                                                }
+                                                else {
+                                                    if let d = devices {
+                                                        for device in d {
+                                                            if device.name == "Napier45" {
+                                                                myPhoton = device
+                                                                var task = myPhoton!.callFunction("ledTempOff", withArguments: ["D5", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
+                                                                    if (error == nil) {
+                                                                        print("LED on D5 successfully turned off")
+                                                                    }
+                                                                    else{
+                                                                        print(error)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                         self.temp.text = String(format: "%.2f°", temp);
                                     }
                                 }
@@ -310,12 +355,57 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                 else {
                                     if let hum = result as? Double {
                                         print("Room humidity is \(String(hum)) degrees")
-//                                        DispatchQueue.global().async(execute: {
-//                                                DispatchQueue.main.async {
-//                                                    self.humLbl.text = String(format: "%.2f", hum);
-//                                                }
-//                                             })
-                                        self.humLbl.text = String(format: "%.2f°", hum);
+                                        if hum < Double(self.minHumVal) || hum > Double(self.maxHumVal){
+                                            var myPhoton : ParticleDevice?
+                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
+                                                if let _ = error {
+                                                    print("Check your internet connectivity")
+                                                }
+                                                else {
+                                                    if let d = devices {
+                                                        for device in d {
+                                                            if device.name == "Napier45" {
+                                                                myPhoton = device
+                                                                var task = myPhoton!.callFunction("ledHumOn", withArguments: ["D4", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
+                                                                    if (error == nil) {
+                                                                        print("LED on D4 successfully turned on")
+                                                                    }
+                                                                    else{
+                                                                        print(error)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            var myPhoton : ParticleDevice?
+                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
+                                                if let _ = error {
+                                                    print("Check your internet connectivity")
+                                                }
+                                                else {
+                                                    if let d = devices {
+                                                        for device in d {
+                                                            if device.name == "Napier45" {
+                                                                myPhoton = device
+                                                                var task = myPhoton!.callFunction("ledHumOff", withArguments: ["D4", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
+                                                                    if (error == nil) {
+                                                                        print("LED on D4 successfully turned off")
+                                                                    }
+                                                                    else{
+                                                                        print(error)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        self.humLbl.text = String(format: "%.2f%", hum);
                                     }
                                 }
                             })
@@ -326,37 +416,31 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                 else {
                                     if let water = result as? CGFloat {
                                         print("Soil Moisture Level is \(water) %")
-//                                        DispatchQueue.global().async(execute: {
-//                                                DispatchQueue.main.async {
-//                                                    self.waterLvlLbl.text = String(water)
-//                                                    // etc
-//                                                }
-//                                             })
-//                                        if water < 10 {
-//                                            var myPhoton : ParticleDevice?
-//                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
-//                                                if let _ = error {
-//                                                    print("Check your internet connectivity")
-//                                                }
-//                                                else {
-//                                                    if let d = devices {
-//                                                        for device in d {
-//                                                            if device.name == "Napier45" {
-//                                                                myPhoton = device
-//                                                                var task = myPhoton!.callFunction("WaterOn", withArguments: ["D8", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
-//                                                                    if (error == nil) {
-//                                                                        print("Servo on D8 successfully turned on")
-//                                                                    }
-//                                                                    else{
-//                                                                        print(error)
-//                                                                    }
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
+                                        if water .isLess (than: CGFloat(self.minMoistureVal)){
+                                            var myPhoton : ParticleDevice?
+                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
+                                                if let _ = error {
+                                                    print("Check your internet connectivity")
+                                                }
+                                                else {
+                                                    if let d = devices {
+                                                        for device in d {
+                                                            if device.name == "Napier45" {
+                                                                myPhoton = device
+                                                                var task = myPhoton!.callFunction("WaterOn", withArguments: ["D8", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
+                                                                    if (error == nil) {
+                                                                        print("Servo on D8 successfully turned on")
+                                                                    }
+                                                                    else{
+                                                                        print(error)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                         self.waterLvlLbl.text = "\(water) %"
                                         self.shape.strokeEnd = water/100;
                                     }
