@@ -39,8 +39,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        variableReader()
-        timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
+        //variableReader()
+        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 60000){
             self.timer.invalidate()
         }
@@ -319,31 +319,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                                 }
                                             }
                                         }
-                                        else{
-                                            var myPhoton : ParticleDevice?
-                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
-                                                if let _ = error {
-                                                    print("Check your internet connectivity")
-                                                }
-                                                else {
-                                                    if let d = devices {
-                                                        for device in d {
-                                                            if device.name == "Napier45" {
-                                                                myPhoton = device
-                                                                var task = myPhoton!.callFunction("ledTempOff", withArguments: ["D5", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
-                                                                    if (error == nil) {
-                                                                        print("LED on D5 successfully turned off")
-                                                                    }
-                                                                    else{
-                                                                        print(error)
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
                                         self.temp.text = String(format: "%.2f°", temp);
                                     }
                                 }
@@ -369,31 +344,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                                                 var task = myPhoton!.callFunction("ledHumOn", withArguments: ["D4", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
                                                                     if (error == nil) {
                                                                         print("LED on D4 successfully turned on")
-                                                                    }
-                                                                    else{
-                                                                        print(error)
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        else{
-                                            var myPhoton : ParticleDevice?
-                                            ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
-                                                if let _ = error {
-                                                    print("Check your internet connectivity")
-                                                }
-                                                else {
-                                                    if let d = devices {
-                                                        for device in d {
-                                                            if device.name == "Napier45" {
-                                                                myPhoton = device
-                                                                var task = myPhoton!.callFunction("ledHumOff", withArguments: ["D4", 1]) { (resultCode : NSNumber?, error : Error?) -> Void in
-                                                                    if (error == nil) {
-                                                                        print("LED on D4 successfully turned off")
                                                                     }
                                                                     else{
                                                                         print(error)
