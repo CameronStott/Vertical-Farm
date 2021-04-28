@@ -40,7 +40,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         //variableReader()
-        timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 60000){
             self.timer.invalidate()
         }
@@ -364,9 +364,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                     print("Failed reading moisture from device")
                                 }
                                 else {
-                                    if let water = result as? CGFloat {
+                                    if let water = result as? Double {
                                         print("Soil Moisture Level is \(water) %")
-                                        if water .isLess (than: CGFloat(self.minMoistureVal)){
+                                        if water < Double(self.minMoistureVal){
                                             var myPhoton : ParticleDevice?
                                             ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
                                                 if let _ = error {
@@ -391,8 +391,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
                                                 }
                                             }
                                         }
-                                        self.waterLvlLbl.text = "\(water) %"
-                                        self.shape.strokeEnd = water/100;
+                                        let cg = CGFloat(water);
+                                        self.waterLvlLbl.text = "\(Int(water))%"
+                                        self.shape.strokeEnd =  cg/100;
                                     }
                                 }
                             })
