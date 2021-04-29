@@ -39,11 +39,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        //variableReader()
+        access()
         timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(variableReader), userInfo: nil, repeats: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 60000){
             self.timer.invalidate()
         }
+        //functions to add layers on UI
         addTxtBoxPlaceholders()
         createCircleTrack()
         createCircle()
@@ -52,6 +53,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         createSquare()
     }
     
+    // function to allow the user to tap out of the number pad
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         minTemp.resignFirstResponder()
         maxTemp.resignFirstResponder()
@@ -60,6 +62,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         maxHum.resignFirstResponder()
     }
     
+    //function to add placeholder text on the text boxes to show the user what the current min and max values are
     func addTxtBoxPlaceholders(){
         minTemp.placeholder = String(minTempVal)
         maxTemp.placeholder = String(maxTempVal)
@@ -67,6 +70,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         maxHum.placeholder = String(maxHumVal)
         minMoisture.placeholder = String(minMoistureVal)
     }
+    
+    //function to apply the new min and max values that the user typed in and updates the vaiables
     @IBAction func applyMinMax(_ sender: UIButton) {
 
         if minMoisture.text == ""{
@@ -111,7 +116,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    
+    // function to create the square layer around the center buttons
     func createSquare(){
         sqaure.path = UIBezierPath(rect: CGRect(x: 30, y: 482, width: 365, height: 160)).cgPath
         sqaure.fillColor = UIColor.clear.cgColor
@@ -120,6 +125,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.layer.addSublayer(sqaure)
     }
     
+    //function to create the circle layer that is dynamic for the water moisture
     func createCircle(){
         let circlePath = UIBezierPath(arcCenter: CGPoint(x: 210, y: 332), radius: 70, startAngle: -(.pi/2), endAngle: .pi * 1.5 , clockwise:true)
         
@@ -131,6 +137,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.layer.addSublayer(shape)
     }
     
+    //function to create the circle layer for the temperature
     func createTempCircle(){
         let circlePath = UIBezierPath(arcCenter: CGPoint(x: 90, y: 160), radius: 70, startAngle: -(.pi/2), endAngle: .pi * 1.5 , clockwise:true)
         
@@ -142,6 +149,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.layer.addSublayer(tempShape)
     }
     
+    //function to create the circle layer for the humidity
     func createHumCircle(){
         let circlePath = UIBezierPath(arcCenter: CGPoint(x: 330, y: 160), radius: 70, startAngle: -(.pi/2), endAngle: .pi * 1.5 , clockwise:true)
         
@@ -153,6 +161,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.layer.addSublayer(humShape)
     }
     
+    //function to create the background circle that helps to show the soil moisture - this circle stays static
     func createCircleTrack(){
         let circlePath = UIBezierPath(arcCenter: CGPoint(x: 210, y: 332), radius: 70, startAngle: -(.pi/2), endAngle: .pi * 1.5 , clockwise:true)
         
@@ -164,19 +173,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         view.layer.addSublayer(track)
     }
     
-    func askForPermission(){
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            
-            if let error = error {
-                print(error)
-            }
-            
-            // Enable or disable features based on the authorization.
-        }
-    }
-    
-    @IBAction func access(_ sender: UIButton) {
+    // provides the session access token to allow connection to the particle cloud
+    func access(){
         if ParticleCloud.sharedInstance().injectSessionAccessToken("c58b3cec34b1b7ade8802e15e1627580e87ec999") {
             print("Session is active")
         } else {
@@ -184,16 +182,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func loginToDevice(){
-        ParticleCloud.sharedInstance().login(withUser: "cameron_stott@btinternet.com", password: "PAL7398s") { (error:Error?) -> Void in
-            if let _ = error {
-                print("Wrong credentials or no internet connectivity, please try again")
-            }
-            else {
-                print("Logged in")
-            }
-        }
-    }
+    
+    //function to invoke the servo on the particle device when the button is clicked
     @IBAction func waterOnBtn(_ sender: UIButton) {
         var myPhoton : ParticleDevice?
         ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
@@ -220,6 +210,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    //function to invoke led on on D6 pin on the partcle device when the on button is clicked
     @IBAction func turnOffLED(_ sender: UIButton) {
         var myPhoton : ParticleDevice?
         ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
@@ -246,6 +237,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
+    
+    //function to invoke led off on D6 pin on the partcle device when the of button is clicked
     @IBAction func turnOnLED(_ sender: UIButton) {
         var myPhoton : ParticleDevice?
         ParticleCloud.sharedInstance().getDevices { (devices:[ParticleDevice]?, error:Error?) -> Void in
@@ -272,8 +265,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    
-
+    //fuction that reads the variables from the particle cloud and displays them on the mobile UI
     @objc func variableReader(){
 
         var myPhoton : ParticleDevice?
